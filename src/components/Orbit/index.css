@@ -1,6 +1,7 @@
 .orbit {
   border-radius: 50%;
-  border: 1px solid var(--mauve-6);
+  outline: 0.25rem solid var(--mauve-6);
+  outline-offset: -0.125rem;
   position: absolute;
   top: 50%;
   left: 50%;

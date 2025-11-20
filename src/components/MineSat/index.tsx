@@ -29,7 +29,7 @@ export function MineSat() {
   const [state, setState] = useState(MineSatState.Depositing);
   const [a, setA] = useState(r_M);
   const [e, setE] = useState(0);
-  const [omega, setOmega] = useState(Math.random() * 2 * Math.PI);
+  const [omega, setOmega] = useState(0);
 
   const stateExpiring = useRef(0);
 

@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Host, SimulationContext } from "../../contexts/Simulation";
 import { mineSats, MineSatState } from "../../stores/mineSats";
-import { r_M } from "../../util/constants";
 import { Satellite } from "../Satellite";
 import "./index.css";
 
@@ -18,10 +17,11 @@ interface MineSatProps {
 export function MineSat({ index }: MineSatProps) {
   const { host } = useContext(SimulationContext);
 
+  const initialMineSat = mineSats[index];
   const [visible, setVisible] = useState(false);
-  const [a, setA] = useState(r_M);
-  const [e, setE] = useState(0);
-  const [omega, setOmega] = useState(0);
+  const [a, setA] = useState(initialMineSat.a);
+  const [e, setE] = useState(initialMineSat.e);
+  const [omega, setOmega] = useState(initialMineSat.omega);
 
   useEffect(() => {
     function callback() {

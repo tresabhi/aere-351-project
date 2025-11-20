@@ -1,8 +1,9 @@
 import { times } from "lodash-es";
 import { Host, SimulationContext } from "../../contexts/Simulation";
-import { mu_S, N, r_J, r_M } from "../../util/constants";
+import { mu_sun, N, r_jupiter, r_mars } from "../../util/constants";
 import { Jupiter } from "../Jupiter";
 import { Label } from "../Label";
+import { Mars } from "../Mars";
 import { MineSat } from "../MineSat";
 import { Orbit } from "../Orbit";
 import { Sun } from "../Sun";
@@ -11,17 +12,19 @@ import "./index.css";
 
 export function SolarSystem() {
   return (
-    <SimulationContext value={{ scale: 2.5 * r_J, mu: mu_S, host: Host.Sun }}>
+    <SimulationContext
+      value={{ scale: 2.5 * r_jupiter, mu: mu_sun, host: Host.Sun }}
+    >
       <div className="solar-system root-panel">
-        <Orbit r={r_M} />
-        <Orbit r={r_J} />
+        <Orbit r={r_mars} />
+        <Orbit r={r_jupiter} />
 
         {times(N, (index) => (
           <MineSat key={index} index={index} />
         ))}
 
         <Sun />
-        {/* <Mars /> */}
+        <Mars />
         <Jupiter />
 
         <Trojan color={TrojanKind.Blue} />

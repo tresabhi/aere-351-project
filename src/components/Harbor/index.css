@@ -1,0 +1,6 @@
+.harbor {
+  width: 2rem;
+  height: 2rem;
+  border: 0.125rem var(--mauve-10) solid;
+  transform: rotate(45deg);
+}

@@ -1,6 +1,6 @@
 import { Quicklime } from "quicklime";
 
-const SPEED = 10000000;
+const SPEED = 2 ** 12;
 
 export const timer = new Quicklime<number>(0);
 

@@ -1,5 +1,5 @@
 import { times } from "lodash-es";
-import { N } from "../util/constants";
+import { N, r_harbor } from "../util/constants";
 import { timer } from "../util/timer";
 
 export enum MineSatState {
@@ -37,7 +37,7 @@ export const mineSats: MineSat[] = times(N, () => ({
   expiry: 0,
 
   relative: MineSatRelative.Mars,
-  a: 0,
+  a: r_harbor,
   e: 0,
   omega: 0,
 

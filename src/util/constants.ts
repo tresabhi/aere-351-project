@@ -1,4 +1,4 @@
-export const N = 2000;
+export const N = 100;
 
 export const r_M = 2.279e8;
 export const r_J = 7.785e8;

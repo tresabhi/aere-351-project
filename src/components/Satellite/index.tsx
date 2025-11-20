@@ -59,7 +59,7 @@ export function Satellite({
     return () => {
       timer.off(update);
     };
-  }, []);
+  }, [a, e, omega, rotate]);
 
   return (
     <div ref={satellite} className="satellite">

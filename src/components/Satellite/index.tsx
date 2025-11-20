@@ -26,12 +26,15 @@ export function Satellite({ children, mu, e, a, omega = 0 }: SatelliteProps) {
       const n = Math.sqrt(mu / a ** 3);
       const M = normalizeAngle(n * t + omega);
       const E = EFromM(M, e);
+      const theta =
+        2 * Math.atan(Math.sqrt((1 + e) / (1 - e)) * Math.tan(E / 2));
 
       const x = a * (Math.cos(E) - e);
       const y = a * Math.sqrt(1 + e ** 2) * Math.sin(E);
 
       satellite.current.style.left = `${(x / SOLAR_SYSTEM_SIZE) * 100 + 50}%`;
       satellite.current.style.top = `${(-y / SOLAR_SYSTEM_SIZE) * 100 + 50}%`;
+      satellite.current.style.transform = `translate(-50%, -50%) rotate(${-theta}rad)`;
     }
 
     timer.on(update);

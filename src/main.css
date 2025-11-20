@@ -1,0 +1,12 @@
+@import "@radix-ui/colors/mauve-dark.css";
+@import "@radix-ui/colors/mauve-dark-alpha.css";
+
+body {
+  margin: 0;
+
+  background-color: black;
+  color: var(--mauve-12);
+
+  font-family: "JetBrains Mono";
+  font-size: 1rem;
+}

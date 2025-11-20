@@ -3,7 +3,6 @@ import { Host, SimulationContext } from "../../contexts/Simulation";
 import { mu_S, N, r_J, r_M } from "../../util/constants";
 import { Jupiter } from "../Jupiter";
 import { Label } from "../Label";
-import { Mars } from "../Mars";
 import { MineSat } from "../MineSat";
 import { Orbit } from "../Orbit";
 import { Sun } from "../Sun";
@@ -22,7 +21,7 @@ export function SolarSystem() {
         ))}
 
         <Sun />
-        <Mars />
+        {/* <Mars /> */}
         <Jupiter />
 
         <Trojan color={TrojanKind.Blue} />

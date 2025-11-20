@@ -1,8 +1,7 @@
-import type { QuicklimeEvent } from "quicklime";
 import { useContext, useEffect, useState } from "react";
-import { SimulationContext } from "../../contexts/Simulation";
+import { Host, SimulationContext } from "../../contexts/Simulation";
+import { mineSats, MineSatState } from "../../stores/mineSats";
 import { r_M } from "../../util/constants";
-import { timer } from "../../util/timer";
 import { Satellite } from "../Satellite";
 import "./index.css";
 
@@ -17,38 +16,50 @@ interface MineSatProps {
 }
 
 export function MineSat({ index }: MineSatProps) {
-  const simulation = useContext(SimulationContext);
+  const { host } = useContext(SimulationContext);
+
+  const [visible, setVisible] = useState(false);
   const [a, setA] = useState(r_M);
   const [e, setE] = useState(0);
   const [omega, setOmega] = useState(0);
 
   useEffect(() => {
-    function update(event: QuicklimeEvent<number>) {
-      // if (event.data > stateExpiring.current) {
-      //   switch (state) {
-      //     case MineSatState.Depositing: {
-      //       const trojan =
-      //         Math.random() > 0.5 ? TrojanKind.Blue : TrojanKind.Red;
-      //       const u1 = Math.random();
-      //       const u2 = Math.random();
-      //       const z0 =
-      //         Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-      //       const omega = z0 * TROJAN_STD_DEV + TROJAN_OMEGAS[trojan];
-      //       setOmega(omega);
-      //       setA(r_J);
-      //       setState(MineSatState.AwaitingTrojan);
-      //       stateExpiring.current = Infinity;
-      //     }
-      //   }
-      // }
+    function callback() {
+      const mineSat = mineSats[index];
+      let intendedHost: Host;
+
+      switch (mineSat.state) {
+        case MineSatState.Depositing:
+        case MineSatState.AwaitingTrojan:
+        case MineSatState.HyperbolicEscape:
+        case MineSatState.HyperbolicReturn:
+        case MineSatState.Parked:
+        case MineSatState.Phasing:
+          intendedHost = Host.Mars;
+          break;
+
+        case MineSatState.EllipticalEscape:
+        case MineSatState.MiningTrojan:
+        case MineSatState.AwaitingMars:
+        case MineSatState.EllipticalReturn:
+          intendedHost = Host.Sun;
+          break;
+      }
+
+      setVisible(intendedHost === host);
     }
 
-    timer.on(update);
+    mineSats[index].callbacks.push(callback);
+    callback();
 
     return () => {
-      timer.off(update);
+      mineSats[index].callbacks = mineSats[index].callbacks.filter(
+        (c) => c !== callback
+      );
     };
   }, []);
+
+  if (!visible) return null;
 
   return (
     <Satellite a={a} e={e} omega={omega}>

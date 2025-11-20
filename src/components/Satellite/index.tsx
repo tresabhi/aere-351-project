@@ -1,6 +1,6 @@
 import type { QuicklimeEvent } from "quicklime";
-import { useEffect, useRef } from "react";
-import { SOLAR_SYSTEM_SIZE } from "../../util/constants";
+import { useContext, useEffect, useRef } from "react";
+import { SimulationScaleContext } from "../../contexts/SimulationScale";
 import { EFromM } from "../../util/EFromM";
 import { timer } from "../../util/timer";
 import "./index.css";
@@ -25,6 +25,7 @@ export function Satellite({
   rotate = false,
 }: SatelliteProps) {
   const satellite = useRef<HTMLDivElement>(null!);
+  const simulationScale = useContext(SimulationScaleContext);
 
   useEffect(() => {
     function update(event: QuicklimeEvent<number>) {
@@ -44,8 +45,8 @@ export function Satellite({
       const x = x0 * c - y0 * s;
       const y = x0 * s + y0 * c;
 
-      satellite.current.style.left = `${(x / SOLAR_SYSTEM_SIZE) * 100 + 50}%`;
-      satellite.current.style.top = `${(-y / SOLAR_SYSTEM_SIZE) * 100 + 50}%`;
+      satellite.current.style.left = `${(x / simulationScale) * 100 + 50}%`;
+      satellite.current.style.top = `${(-y / simulationScale) * 100 + 50}%`;
 
       if (rotate) {
         satellite.current.style.transform = `translate(-50%, -50%) rotate(${

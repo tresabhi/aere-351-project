@@ -1,8 +1,8 @@
 .label {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
-  font-size: 1.5em;
+  top: 0.75rem;
+  left: 0.75rem;
+  font-size: 1rem;
   background-color: var(--mauve-a6);
-  padding: 0.25rem 1rem;
+  padding: 0.25rem 0.75rem;
 }

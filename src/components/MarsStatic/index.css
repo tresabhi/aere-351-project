@@ -1,0 +1,10 @@
+.mars-static {
+  border-radius: 50%;
+  background-color: var(--tomato-9);
+  width: 1.5rem;
+  height: 1.5rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

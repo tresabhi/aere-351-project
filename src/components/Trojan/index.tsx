@@ -1,4 +1,4 @@
-import { mu_S, r_J } from "../../util/constants";
+import { r_J } from "../../util/constants";
 import { Satellite } from "../Satellite";
 import "./index.css";
 
@@ -22,7 +22,7 @@ interface Props {
 
 export function Trojan({ color }: Props) {
   return (
-    <Satellite rotate a={r_J} e={0} mu={mu_S} omega={TROJAN_OMEGAS[color]}>
+    <Satellite rotate a={r_J} e={0} omega={TROJAN_OMEGAS[color]}>
       <img className="trojan" src={COLORS[color]} />
     </Satellite>
   );

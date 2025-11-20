@@ -1,6 +1,6 @@
 import { times } from "lodash-es";
-import { SimulationScaleContext } from "../../contexts/SimulationScale";
-import { N, r_J, r_M } from "../../util/constants";
+import { Host, SimulationContext } from "../../contexts/Simulation";
+import { mu_S, N, r_J, r_M } from "../../util/constants";
 import { Jupiter } from "../Jupiter";
 import { Label } from "../Label";
 import { Mars } from "../Mars";
@@ -12,13 +12,13 @@ import "./index.css";
 
 export function SolarSystem() {
   return (
-    <SimulationScaleContext value={2.5 * r_J}>
+    <SimulationContext value={{ scale: 2.5 * r_J, mu: mu_S, host: Host.Sun }}>
       <div className="solar-system root-panel">
         <Orbit r={r_M} />
         <Orbit r={r_J} />
 
         {times(N, (index) => (
-          <MineSat key={index} />
+          <MineSat key={index} index={index} />
         ))}
 
         <Sun />
@@ -30,6 +30,6 @@ export function SolarSystem() {
 
         <Label>SOLAR SYSTEM</Label>
       </div>
-    </SimulationScaleContext>
+    </SimulationContext>
   );
 }

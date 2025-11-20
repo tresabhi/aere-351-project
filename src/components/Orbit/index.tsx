@@ -1,4 +1,4 @@
-import { SOLAR_SYSTEM_SIZE } from "../constants";
+import { SOLAR_SYSTEM_SIZE } from "../../util/constants";
 import "./index.css";
 
 interface Props {

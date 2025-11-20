@@ -1,0 +1,8 @@
+.orbit {
+  border-radius: 50%;
+  border: 1px solid var(--mauve-6);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

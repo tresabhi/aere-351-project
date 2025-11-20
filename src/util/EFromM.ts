@@ -1,5 +1,4 @@
-// const THRESHOLD = 1e-12;
-const THRESHOLD = 1e-4;
+const THRESHOLD = 2 ** -3;
 
 export function EFromM(M: number, e: number) {
   let E = e < 0.8 ? M : Math.PI;

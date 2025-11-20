@@ -1,7 +1,9 @@
-import { r_J, r_M } from "../../util/constants";
+import { times } from "lodash-es";
+import { N, r_J, r_M } from "../../util/constants";
 import { Jupiter } from "../Jupiter";
 import { Label } from "../Label";
 import { Mars } from "../Mars";
+import { MineSat } from "../MineSat";
 import { Orbit } from "../Orbit";
 import { Sun } from "../Sun";
 import { Trojan, TrojanColor } from "../Trojan";
@@ -21,6 +23,10 @@ export function SolarSystem() {
 
       <Trojan color={TrojanColor.Blue} />
       <Trojan color={TrojanColor.Red} />
+
+      {times(N, (index) => (
+        <MineSat key={index} />
+      ))}
     </div>
   );
 }

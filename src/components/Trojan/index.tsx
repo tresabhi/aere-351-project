@@ -22,7 +22,7 @@ interface Props {
 
 export function Trojan({ color }: Props) {
   return (
-    <Satellite a={r_J} e={0} mu={mu_S} omega={omegas[color]}>
+    <Satellite rotate a={r_J} e={0} mu={mu_S} omega={omegas[color]}>
       <img className="trojan" src={colors[color]} />
     </Satellite>
   );

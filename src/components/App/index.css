@@ -20,4 +20,5 @@
 .root-panel {
   background-color: var(--mauve-1);
   position: relative;
+  overflow: hidden;
 }

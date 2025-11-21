@@ -4,8 +4,6 @@ import { mineSats, MineSatState } from "../../stores/mineSats";
 import { Satellite } from "../Satellite";
 import "./index.css";
 
-const TROJAN_STD_DEV = Math.PI * 2 ** -5;
-
 function Representation() {
   return <div className="mine-sat" />;
 }
@@ -47,6 +45,9 @@ export function MineSat({ index }: MineSatProps) {
       }
 
       setVisible(intendedHost === host);
+      setA(mineSat.a);
+      setE(mineSat.e);
+      setOmega(mineSat.omega);
     }
 
     mineSats[index].callbacks.push(callback);

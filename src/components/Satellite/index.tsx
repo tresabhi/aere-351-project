@@ -2,6 +2,7 @@ import type { QuicklimeEvent } from "quicklime";
 import { useContext, useEffect, useRef } from "react";
 import { SimulationContext } from "../../contexts/Simulation";
 import { EFromM } from "../../util/EFromM";
+import { FFromM } from "../../util/FFromM";
 import { timer } from "../../util/timer";
 import "./index.css";
 
@@ -28,14 +29,27 @@ export function Satellite({
     function update(event: QuicklimeEvent<number>) {
       const t = event.data;
 
-      const n = Math.sqrt(mu / a ** 3);
-      const M = n * t;
-      const E = EFromM(M, e);
-      const theta =
-        2 * Math.atan(Math.sqrt((1 + e) / (1 - e)) * Math.tan(E / 2));
+      let x0: number;
+      let y0: number;
+      let theta: number;
 
-      const x0 = a * (Math.cos(E) - e);
-      const y0 = a * Math.sqrt(1 - e ** 2) * Math.sin(E);
+      if (e < 1) {
+        const n = Math.sqrt(mu / a ** 3);
+        const M = n * t;
+        const E = EFromM(M, e);
+        theta = 2 * Math.atan(Math.sqrt((1 + e) / (1 - e)) * Math.tan(E / 2));
+        x0 = a * (Math.cos(E) - e);
+        y0 = a * Math.sqrt(1 - e ** 2) * Math.sin(E);
+      } else if (e === 1) {
+        throw new Error("e = 1");
+      } else {
+        const n = Math.sqrt(mu / -(a ** 3));
+        const M = n * t;
+        const F = FFromM(M, e);
+        theta = 2 * Math.atan(Math.sqrt((e + 1) / (e - 1)) * Math.tanh(F / 2));
+        x0 = a * (e - Math.cosh(F));
+        y0 = a * Math.sqrt(e ** 2 - 1) * Math.sinh(F);
+      }
 
       const c = Math.cos(omega);
       const s = Math.sin(omega);

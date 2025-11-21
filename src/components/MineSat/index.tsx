@@ -17,6 +17,7 @@ export function MineSat({ index }: MineSatProps) {
 
   const initialMineSat = mineSats[index];
   const [visible, setVisible] = useState(false);
+  const [t0, setT0] = useState(initialMineSat.t0);
   const [a, setA] = useState(initialMineSat.a);
   const [e, setE] = useState(initialMineSat.e);
   const [omega, setOmega] = useState(initialMineSat.omega);
@@ -45,6 +46,7 @@ export function MineSat({ index }: MineSatProps) {
       }
 
       setVisible(intendedHost === host);
+      setT0(mineSat.t0);
       setA(mineSat.a);
       setE(mineSat.e);
       setOmega(mineSat.omega);
@@ -63,7 +65,7 @@ export function MineSat({ index }: MineSatProps) {
   if (!visible) return null;
 
   return (
-    <Satellite a={a} e={e} omega={omega}>
+    <Satellite t0={t0} a={a} e={e} omega={omega}>
       <Representation />
     </Satellite>
   );

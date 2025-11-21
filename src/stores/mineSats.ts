@@ -8,9 +8,10 @@ import {
   r_jupiter,
   r_mars,
 } from "../util/constants";
-import { timer } from "../util/timer";
+import { SIMULATION_SPEED, timer } from "../util/timer";
 
-const TROJAN_STD_DEV = Math.PI * 2 ** -5;
+// const TROJAN_STD_DEV = Math.PI * 2 ** -5;
+const TROJAN_STD_DEV = Math.PI * 2 ** -10;
 
 export enum MineSatState {
   Depositing,
@@ -34,6 +35,7 @@ type MineSat = {
   state: MineSatState;
   expiry: number;
 
+  t0: number;
   a: number;
   e: number;
   omega: number;
@@ -45,7 +47,7 @@ export const mineSats: MineSat[] = times(N, () => ({
   state: MineSatState.Depositing,
   expiry: 0,
 
-  relative: MineSatRelative.Mars,
+  t0: 0,
   a: r_harbor,
   e: 0,
   omega: 0,
@@ -86,15 +88,13 @@ timer.on((event) => {
               (n_current - n_target)) %
           (2 * t_transfer);
 
-        mineSat.expiry += t_remaining;
         mineSat.state = MineSatState.AwaitingTrojan;
+        mineSat.expiry += t_remaining;
 
         break;
       }
 
       case MineSatState.AwaitingTrojan: {
-        mineSat.state = MineSatState.HyperbolicEscape;
-
         v_infinity = 3;
 
         const a = -mu_mars / v_infinity ** 2;
@@ -103,6 +103,9 @@ timer.on((event) => {
         mineSat.a = a;
         mineSat.e = e;
 
+        SIMULATION_SPEED.value = 2 ** 11;
+        mineSat.state = MineSatState.HyperbolicEscape;
+        mineSat.t0 = event.data;
         mineSat.expiry = Infinity;
 
         break;

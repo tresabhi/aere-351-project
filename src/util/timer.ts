@@ -1,19 +1,17 @@
 import { Quicklime } from "quicklime";
 
-const SPEED = 2 ** 24;
-// const SPEED = 2 ** 24;
+export const SIMULATION_SPEED = { value: 2 ** 24 };
 
 export const timer = new Quicklime<number>(0);
 
-let t0 = -1;
+let lastTimestamp = 0;
 
 timer.on(() => {
   requestAnimationFrame((timestamp) => {
-    if (t0 === -1) t0 = timestamp;
+    const dt = timestamp - lastTimestamp;
+    const t = timer.last! + SIMULATION_SPEED.value * (dt / 1000);
 
-    const dt = timestamp - t0;
-    const t = SPEED * (dt / 1000);
-
+    lastTimestamp = timestamp;
     timer.dispatch(t);
   });
 });

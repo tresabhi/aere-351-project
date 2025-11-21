@@ -10,6 +10,7 @@ interface SatelliteProps {
   children: React.ReactNode;
   rotate?: boolean;
 
+  t0?: number;
   omega?: number;
   e: number;
   a: number;
@@ -21,13 +22,14 @@ export function Satellite({
   a,
   omega = 0,
   rotate = false,
+  t0 = 0,
 }: SatelliteProps) {
   const satellite = useRef<HTMLDivElement>(null!);
   const { scale, mu } = useContext(SimulationContext);
 
   useEffect(() => {
     function update(event: QuicklimeEvent<number>) {
-      const t = event.data;
+      const t = event.data - t0;
 
       let x0: number;
       let y0: number;

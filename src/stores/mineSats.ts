@@ -8,10 +8,11 @@ import {
   r_jupiter,
   r_mars,
 } from "../util/constants";
+import { normalizeAngle } from "../util/normalizeAngle";
 import { SIMULATION_SPEED, timer } from "../util/timer";
 
 // const TROJAN_STD_DEV = Math.PI * 2 ** -5;
-const TROJAN_STD_DEV = Math.PI * 2 ** -10;
+const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -10;
 
 export enum MineSatState {
   Depositing,
@@ -64,29 +65,23 @@ timer.on((event) => {
     switch (mineSat.state) {
       case MineSatState.Depositing: {
         const trojan = Math.random() > 0.5 ? TrojanKind.Blue : TrojanKind.Red;
+
         const u1 = Math.random();
         const u2 = Math.random();
         const z0 =
           Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-        const omega_target = z0 * TROJAN_STD_DEV + TROJAN_OMEGAS[trojan];
-        const omega_trojan = 0;
 
-        const n_current = (mu_sun / r_mars ** 3) ** 0.5;
-        const n_target = (mu_sun / r_jupiter ** 3) ** 0.5;
+        const omega_current = 0;
+        const omega_target =
+          z0 * TROJAN_STANDARD_DEVIATION + TROJAN_OMEGAS[trojan];
 
-        const a_transfer = (r_mars + r_jupiter) / 2;
-        const t_transfer = Math.PI * (a_transfer ** 3 / mu_sun) ** 0.5;
+        const n_current = Math.sqrt(mu_sun / r_mars ** 3);
+        const n_target = Math.sqrt(mu_sun / r_jupiter ** 3);
 
-        const delta_theta_required =
-          (Math.PI - omega_target + n_target * t_transfer) % (2 * Math.PI);
-        const delta_theta_current =
-          (omega_target - omega_trojan) % (2 * Math.PI);
+        const delta_n = n_current - n_target;
+        const delta_theta = normalizeAngle(omega_target - omega_current);
 
-        const t_remaining =
-          (2 * t_transfer +
-            (delta_theta_current - delta_theta_required) /
-              (n_current - n_target)) %
-          (2 * t_transfer);
+        const t_remaining = delta_theta / Math.abs(delta_n);
 
         mineSat.state = MineSatState.AwaitingTrojan;
         mineSat.expiry += t_remaining;
@@ -105,7 +100,7 @@ timer.on((event) => {
 
         SIMULATION_SPEED.value = 2 ** 11;
         mineSat.state = MineSatState.HyperbolicEscape;
-        mineSat.t0 = event.data;
+        mineSat.t0 = mineSat.expiry;
         mineSat.expiry = Infinity;
 
         break;

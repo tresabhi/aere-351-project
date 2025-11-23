@@ -2,14 +2,14 @@ import { times } from "lodash-es";
 import { TROJAN_OMEGAS, TrojanKind } from "../components/Trojan";
 import {
   mu_mars,
-  mu_sun,
   N,
+  n_jupiter,
+  n_mars,
   r_harbor,
-  r_jupiter,
-  r_mars,
+  T_synodic,
+  T_transfer,
 } from "../util/constants";
-import { normalizeAngle } from "../util/normalizeAngle";
-import { SIMULATION_SPEED, timer } from "../util/timer";
+import { timer } from "../util/timer";
 
 // const TROJAN_STD_DEV = Math.PI * 2 ** -5;
 const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -10;
@@ -58,7 +58,9 @@ export const mineSats: MineSat[] = times(N, () => ({
 
 timer.on((event) => {
   for (const mineSat of mineSats) {
-    if (mineSat.expiry > event.data) continue;
+    const t = event.data;
+
+    if (mineSat.expiry > t) continue;
 
     let v_infinity = 0;
 
@@ -71,20 +73,15 @@ timer.on((event) => {
         const z0 =
           Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
 
-        const omega_current = 0;
-        const omega_target =
-          z0 * TROJAN_STANDARD_DEVIATION + TROJAN_OMEGAS[trojan];
+        const omega = z0 * TROJAN_STANDARD_DEVIATION + TROJAN_OMEGAS[trojan];
 
-        const n_current = Math.sqrt(mu_sun / r_mars ** 3);
-        const n_target = Math.sqrt(mu_sun / r_jupiter ** 3);
-
-        const delta_n = n_current - n_target;
-        const delta_theta = normalizeAngle(omega_target - omega_current);
-
-        const t_remaining = delta_theta / Math.abs(delta_n);
+        const t_0 =
+          ((1 / 2) * n_jupiter * T_transfer - omega - Math.PI) /
+          (n_mars - n_jupiter);
+        const t_next = T_synodic * Math.ceil((t - t_0) / T_synodic) + t_0;
 
         mineSat.state = MineSatState.AwaitingTrojan;
-        mineSat.expiry += t_remaining;
+        mineSat.expiry = t_next;
 
         break;
       }
@@ -98,7 +95,7 @@ timer.on((event) => {
         mineSat.a = a;
         mineSat.e = e;
 
-        SIMULATION_SPEED.value = 2 ** 11;
+        // SIMULATION_SPEED.value = 2 ** 11;
         mineSat.state = MineSatState.HyperbolicEscape;
         mineSat.t0 = mineSat.expiry;
         mineSat.expiry = Infinity;

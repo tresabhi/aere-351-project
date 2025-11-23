@@ -1,6 +1,7 @@
 import { Quicklime } from "quicklime";
 
-export const SIMULATION_SPEED = { value: 2 ** 24 };
+// export const SIMULATION_SPEED = { value: 2 ** 24 };
+export const SIMULATION_SPEED = { value: 2 ** 10 };
 
 export const timer = new Quicklime<number>(0);
 

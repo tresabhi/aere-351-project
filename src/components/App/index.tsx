@@ -1,3 +1,4 @@
+import { Controls } from "../Controls";
 import { MartianSystem } from "../MartianSystem";
 import { SolarSystem } from "../SolarSystem";
 import "./index.css";
@@ -9,6 +10,7 @@ export function App() {
 
       <div className="app-vertical">
         <MartianSystem />
+        <Controls />
       </div>
     </div>
   );

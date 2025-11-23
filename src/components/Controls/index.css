@@ -1,0 +1,21 @@
+.speed-control {
+  display: flex;
+  align-items: center;
+
+  span {
+    margin-right: 1rem;
+  }
+
+  button {
+    font: inherit;
+    border: none;
+    padding: 0.5rem;
+    background-color: var(--mauve-3);
+    color: var(--mauve-11);
+
+    &[data-selected="true"] {
+      background-color: var(--mauve-6);
+      color: var(--mauve-12);
+    }
+  }
+}

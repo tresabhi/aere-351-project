@@ -15,6 +15,9 @@ import { timer } from "../util/timer";
 const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -5;
 // const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -10;
 
+const MINING_TIME_AVERAGE = 12 * 30 * 24 * 60 * 60;
+const MINING_TIME_VARIANCE = 8 * 30 * 24 * 60 * 60;
+
 export enum MineSatState {
   Depositing,
   AwaitingTrojan,
@@ -68,7 +71,7 @@ const cache: MineSatCache[] = times(N, () => ({
 timer.on((event) => {
   for (let i = 0; i < N; i++) {
     const mineSat = mineSats[i];
-    const t = event.data;
+    const t = event.data; // TODO: replace all instances of t with mineSat.expiry
 
     if (mineSat.expiry > t) continue;
 
@@ -123,7 +126,42 @@ timer.on((event) => {
 
         mineSat.t0 = 0;
         mineSat.state = MineSatState.MiningTrojan;
-        mineSat.expiry = Infinity;
+        mineSat.expiry +=
+          MINING_TIME_AVERAGE + (2 * Math.random() - 1) * MINING_TIME_VARIANCE;
+
+        break;
+      }
+
+      case MineSatState.MiningTrojan: {
+        const omega = cache[i].omega_trojan;
+
+        const t_0 =
+          (omega - (1 / 2) * n_mars * T_transfer - Math.PI) /
+          (n_mars - n_jupiter);
+        const t_next = T_synodic * Math.ceil((t - t_0) / T_synodic) + t_0;
+
+        mineSat.omega = 0;
+
+        mineSat.state = MineSatState.AwaitingMars;
+        mineSat.expiry = t_next;
+
+        break;
+      }
+
+      case MineSatState.AwaitingMars: {
+        const a = (r_jupiter + r_mars) / 2;
+        const e = (r_jupiter - r_mars) / (r_jupiter + r_mars);
+
+        const theta_juipiter = n_jupiter * mineSat.expiry;
+
+        mineSat.a = a;
+        mineSat.e = e;
+        mineSat.omega = theta_juipiter + cache[i].omega_trojan - Math.PI;
+
+        mineSat.t0 = mineSat.expiry - T_transfer / 2;
+
+        mineSat.state = MineSatState.EllipticalReturn;
+        mineSat.expiry += T_transfer / 2;
 
         break;
       }

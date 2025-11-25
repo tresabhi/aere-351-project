@@ -1,4 +1,4 @@
-export const N = 500;
+export const N = 50;
 // export const N = 1;
 
 export const R_mars = 3389.5;

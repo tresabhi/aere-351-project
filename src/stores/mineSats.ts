@@ -73,9 +73,9 @@ const cache: MineSatCache[] = times(N, () => ({
 timer.on((event) => {
   for (let i = 0; i < N; i++) {
     const mineSat = mineSats[i];
-    const t = event.data; // TODO: replace all instances of t with mineSat.expiry
+    const t = mineSat.expiry;
 
-    if (mineSat.expiry > t) continue;
+    if (t > event.data) continue;
 
     switch (mineSat.state) {
       case MineSatState.Depositing: {
@@ -107,13 +107,13 @@ timer.on((event) => {
         const a = (r_jupiter + r_mars) / 2;
         const e = (r_jupiter - r_mars) / (r_jupiter + r_mars);
 
-        const theta_mars = n_mars * mineSat.expiry;
+        const theta_mars = n_mars * t;
 
         mineSat.a = a;
         mineSat.e = e;
         mineSat.omega = theta_mars;
 
-        mineSat.t0 = mineSat.expiry;
+        mineSat.t0 = t;
 
         mineSat.state = MineSatState.EllipticalEscape;
         mineSat.expiry += T_transfer / 2;
@@ -152,13 +152,13 @@ timer.on((event) => {
         const a = (r_jupiter + r_mars) / 2;
         const e = (r_jupiter - r_mars) / (r_jupiter + r_mars);
 
-        const theta_juipiter = n_jupiter * mineSat.expiry;
+        const theta_juipiter = n_jupiter * t;
 
         mineSat.a = a;
         mineSat.e = e;
         mineSat.omega = theta_juipiter + cache[i].omega_trojan + Math.PI;
 
-        mineSat.t0 = mineSat.expiry - T_transfer / 2;
+        mineSat.t0 = t - T_transfer / 2;
 
         mineSat.state = MineSatState.EllipticalReturn;
         mineSat.expiry += T_transfer / 2;

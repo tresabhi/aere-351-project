@@ -15,8 +15,10 @@ import { timer } from "../util/timer";
 const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -5;
 // const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -10;
 
-const MINING_TIME_AVERAGE = 12 * 30 * 24 * 60 * 60;
-const MINING_TIME_VARIANCE = 8 * 30 * 24 * 60 * 60;
+const MINING_TIME_AVERAGE = 48 * 30 * 24 * 60 * 60;
+const MINING_TIME_VARIANCE = 32 * 30 * 24 * 60 * 60;
+const DEPOSITING_TIME_AVERAGE = MINING_TIME_AVERAGE;
+const DEPOSITING_TIME_VARIANCE = MINING_TIME_VARIANCE;
 
 export enum MineSatState {
   Depositing,
@@ -140,8 +142,6 @@ timer.on((event) => {
           (n_mars - n_jupiter);
         const t_next = T_synodic * Math.ceil((t - t_0) / T_synodic) + t_0;
 
-        mineSat.omega = 0;
-
         mineSat.state = MineSatState.AwaitingMars;
         mineSat.expiry = t_next;
 
@@ -156,12 +156,24 @@ timer.on((event) => {
 
         mineSat.a = a;
         mineSat.e = e;
-        mineSat.omega = theta_juipiter + cache[i].omega_trojan - Math.PI;
+        mineSat.omega = theta_juipiter + cache[i].omega_trojan + Math.PI;
 
         mineSat.t0 = mineSat.expiry - T_transfer / 2;
 
         mineSat.state = MineSatState.EllipticalReturn;
         mineSat.expiry += T_transfer / 2;
+
+        break;
+      }
+
+      case MineSatState.EllipticalReturn: {
+        mineSat.a = r_harbor;
+        mineSat.e = 0;
+
+        mineSat.state = MineSatState.Depositing;
+        mineSat.expiry +=
+          DEPOSITING_TIME_AVERAGE +
+          (2 * Math.random() - 1) * DEPOSITING_TIME_VARIANCE;
 
         break;
       }

@@ -29,7 +29,7 @@ export function Satellite({
 
   useEffect(() => {
     function update(event: QuicklimeEvent<number>) {
-      const t = event.data - t0;
+      let t = event.data - t0;
 
       let x0: number;
       let y0: number;
@@ -43,14 +43,14 @@ export function Satellite({
         x0 = a * (Math.cos(E) - e);
         y0 = a * Math.sqrt(1 - e ** 2) * Math.sin(E);
       } else if (e === 1) {
-        throw new Error("e = 1");
+        throw new Error("e = 1 currently unsupported");
       } else {
         const n = Math.sqrt(mu / -(a ** 3));
         const M = n * t;
         const F = FFromM(M, e);
         theta = 2 * Math.atan(Math.sqrt((e + 1) / (e - 1)) * Math.tanh(F / 2));
-        x0 = a * (e - Math.cosh(F));
-        y0 = a * Math.sqrt(e ** 2 - 1) * Math.sinh(F);
+        x0 = a * (Math.cosh(F) - e);
+        y0 = a * Math.sqrt(e ** 2 - 1) * Math.sinh(-F);
       }
 
       const c = Math.cos(omega);

@@ -1,13 +1,13 @@
 import { Quicklime } from "quicklime";
 
 export enum SimulationSpeed {
+  Power8 = 8,
   Power11 = 11,
   Power24 = 24,
   Power26 = 27,
 }
 
-// export const SIMULATION_SPEED = { value: 2 ** 24 };
-export const SIMULATION_SPEED = { value: SimulationSpeed.Power11 };
+export const SIMULATION_SPEED = { value: SimulationSpeed.Power24 };
 
 export const timer = new Quicklime<number>(0);
 

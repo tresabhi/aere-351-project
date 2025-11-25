@@ -6,13 +6,16 @@ import {
   n_jupiter,
   n_mars,
   r_harbor,
+  r_jupiter,
+  r_mars,
+  r_mars_soi,
   T_synodic,
   T_transfer,
 } from "../util/constants";
 import { timer } from "../util/timer";
 
-// const TROJAN_STD_DEV = Math.PI * 2 ** -5;
-const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -10;
+const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -5;
+// const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -10;
 
 export enum MineSatState {
   Depositing,
@@ -56,13 +59,20 @@ export const mineSats: MineSat[] = times(N, () => ({
   callbacks: [],
 }));
 
+interface MineSatCache {
+  omega_trojan: number;
+}
+
+const cache: MineSatCache[] = times(N, () => ({
+  omega_trojan: 0,
+}));
+
 timer.on((event) => {
+  let i = 0;
   for (const mineSat of mineSats) {
     const t = event.data;
 
     if (mineSat.expiry > t) continue;
-
-    let v_infinity = 0;
 
     switch (mineSat.state) {
       case MineSatState.Depositing: {
@@ -80,24 +90,53 @@ timer.on((event) => {
           (n_mars - n_jupiter);
         const t_next = T_synodic * Math.ceil((t - t_0) / T_synodic) + t_0;
 
+        mineSat.omega = 0;
+
         mineSat.state = MineSatState.AwaitingTrojan;
         mineSat.expiry = t_next;
+
+        cache[i].omega_trojan = omega;
 
         break;
       }
 
       case MineSatState.AwaitingTrojan: {
-        v_infinity = 3;
+        const v_infinity = 2;
 
         const a = -mu_mars / v_infinity ** 2;
         const e = 1 - r_harbor / a;
 
+        const r = r_mars_soi;
+        const p = a * (1 - e ** 2);
+        const theta = Math.acos((p - r) / (e * r));
+        const F =
+          2 * Math.atanh(Math.sqrt((e - 1) / (e + 1)) * Math.tan(theta / 2));
+        const M = e * Math.sinh(F) - F;
+        const t = Math.sqrt(-(a ** 3) / mu_mars) * M;
+
         mineSat.a = a;
         mineSat.e = e;
+        mineSat.omega = 0;
 
-        // SIMULATION_SPEED.value = 2 ** 11;
         mineSat.state = MineSatState.HyperbolicEscape;
         mineSat.t0 = mineSat.expiry;
+        mineSat.expiry = t;
+
+        break;
+      }
+
+      case MineSatState.HyperbolicEscape: {
+        const a = (r_jupiter + r_mars) / 2;
+        const e = (r_jupiter - r_mars) / (r_jupiter + r_mars);
+
+        const theta_mars = n_mars * t;
+
+        mineSat.a = a;
+        mineSat.e = e;
+        mineSat.omega = theta_mars;
+
+        mineSat.state = MineSatState.EllipticalEscape;
+        // mineSat.t0 = mineSat.expiry;
         mineSat.expiry = Infinity;
 
         break;
@@ -105,6 +144,8 @@ timer.on((event) => {
     }
 
     for (const callback of mineSat.callbacks) callback();
+
+    i++;
   }
 });
 

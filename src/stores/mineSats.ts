@@ -1,14 +1,12 @@
 import { times } from "lodash-es";
 import { TROJAN_OMEGAS, TrojanKind } from "../components/Trojan";
 import {
-  mu_mars,
   N,
   n_jupiter,
   n_mars,
   r_harbor,
   r_jupiter,
   r_mars,
-  r_mars_soi,
   T_synodic,
   T_transfer,
 } from "../util/constants";
@@ -68,8 +66,8 @@ const cache: MineSatCache[] = times(N, () => ({
 }));
 
 timer.on((event) => {
-  let i = 0;
-  for (const mineSat of mineSats) {
+  for (let i = 0; i < N; i++) {
+    const mineSat = mineSats[i];
     const t = event.data;
 
     if (mineSat.expiry > t) continue;
@@ -101,31 +99,6 @@ timer.on((event) => {
       }
 
       case MineSatState.AwaitingTrojan: {
-        const v_infinity = 2;
-
-        const a = -mu_mars / v_infinity ** 2;
-        const e = 1 - r_harbor / a;
-
-        const r = r_mars_soi;
-        const p = a * (1 - e ** 2);
-        const theta = Math.acos((p - r) / (e * r));
-        const F =
-          2 * Math.atanh(Math.sqrt((e - 1) / (e + 1)) * Math.tan(theta / 2));
-        const M = e * Math.sinh(F) - F;
-        const t = Math.sqrt(-(a ** 3) / mu_mars) * M;
-
-        mineSat.a = a;
-        mineSat.e = e;
-        mineSat.omega = 0;
-
-        mineSat.state = MineSatState.HyperbolicEscape;
-        mineSat.t0 = mineSat.expiry;
-        mineSat.expiry += t;
-
-        break;
-      }
-
-      case MineSatState.HyperbolicEscape: {
         const a = (r_jupiter + r_mars) / 2;
         const e = (r_jupiter - r_mars) / (r_jupiter + r_mars);
 
@@ -152,15 +125,11 @@ timer.on((event) => {
         mineSat.state = MineSatState.MiningTrojan;
         mineSat.expiry = Infinity;
 
-        console.log(mineSat.omega);
-
         break;
       }
     }
 
     for (const callback of mineSat.callbacks) callback();
-
-    i++;
   }
 });
 

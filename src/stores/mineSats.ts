@@ -86,7 +86,7 @@ timer.on((event) => {
         const omega = z0 * TROJAN_STANDARD_DEVIATION + TROJAN_OMEGAS[trojan];
 
         const t_0 =
-          ((1 / 2) * n_jupiter * T_transfer - omega - Math.PI) /
+          ((1 / 2) * n_jupiter * T_transfer + omega - Math.PI) /
           (n_mars - n_jupiter);
         const t_next = T_synodic * Math.ceil((t - t_0) / T_synodic) + t_0;
 
@@ -120,7 +120,7 @@ timer.on((event) => {
 
         mineSat.state = MineSatState.HyperbolicEscape;
         mineSat.t0 = mineSat.expiry;
-        mineSat.expiry = t;
+        mineSat.expiry += t;
 
         break;
       }
@@ -129,15 +129,30 @@ timer.on((event) => {
         const a = (r_jupiter + r_mars) / 2;
         const e = (r_jupiter - r_mars) / (r_jupiter + r_mars);
 
-        const theta_mars = n_mars * t;
+        const theta_mars = n_mars * mineSat.expiry;
 
         mineSat.a = a;
         mineSat.e = e;
         mineSat.omega = theta_mars;
 
+        mineSat.t0 = mineSat.expiry;
+
         mineSat.state = MineSatState.EllipticalEscape;
-        // mineSat.t0 = mineSat.expiry;
+        mineSat.expiry += T_transfer / 2;
+
+        break;
+      }
+
+      case MineSatState.EllipticalEscape: {
+        mineSat.a = r_jupiter;
+        mineSat.e = 0;
+        mineSat.omega = cache[i].omega_trojan;
+
+        mineSat.t0 = 0;
+        mineSat.state = MineSatState.MiningTrojan;
         mineSat.expiry = Infinity;
+
+        console.log(mineSat.omega);
 
         break;
       }

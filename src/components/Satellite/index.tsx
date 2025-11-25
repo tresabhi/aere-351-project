@@ -24,11 +24,13 @@ export function Satellite({
   rotate = false,
   t0 = 0,
 }: SatelliteProps) {
-  const satellite = useRef<HTMLDivElement>(null!);
+  const satellite = useRef<HTMLDivElement>(null);
   const { scale, mu } = useContext(SimulationContext);
 
   useEffect(() => {
     function update(event: QuicklimeEvent<number>) {
+      if (!satellite.current) return;
+
       let t = event.data - t0;
 
       let x0: number;

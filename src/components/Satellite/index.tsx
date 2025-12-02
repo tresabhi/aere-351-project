@@ -1,5 +1,5 @@
 import type { QuicklimeEvent } from "quicklime";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { SimulationContext } from "../../contexts/Simulation";
 import { EFromM } from "../../util/EFromM";
 import { FFromM } from "../../util/FFromM";
@@ -26,12 +26,13 @@ export function Satellite({
   t0 = 0,
 }: SatelliteProps) {
   const satellite = useRef<HTMLDivElement>(null);
-  const { scale: initialScale, mu } = useContext(SimulationContext);
-  const scale = useRef(initialScale);
+  const { scale0, mu } = useContext(SimulationContext);
+  const [zoom, setZoom] = useState(zoomEvent.last!);
+  const scale = scale0 * zoom;
 
   useEffect(() => {
     function handleZoom(event: QuicklimeEvent<Zoom>) {
-      scale.current *= event.data / event.last!;
+      setZoom(event.data);
     }
 
     zoomEvent.on(handleZoom);
@@ -74,8 +75,8 @@ export function Satellite({
       const x = x0 * c - y0 * s;
       const y = x0 * s + y0 * c;
 
-      satellite.current.style.left = `${(x / scale.current) * 100 + 50}%`;
-      satellite.current.style.top = `${(-y / scale.current) * 100 + 50}%`;
+      satellite.current.style.left = `${(x / scale) * 100 + 50}%`;
+      satellite.current.style.top = `${(-y / scale) * 100 + 50}%`;
 
       if (rotate) {
         satellite.current.style.transform = `translate(-50%, -50%) rotate(${
@@ -89,7 +90,7 @@ export function Satellite({
     return () => {
       timer.off(update);
     };
-  }, [a, e, omega, rotate]);
+  }, [a, e, omega, rotate, scale]);
 
   return (
     <div ref={satellite} className="satellite">

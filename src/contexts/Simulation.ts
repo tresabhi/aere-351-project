@@ -6,13 +6,13 @@ export enum Host {
 }
 
 interface Simulation {
-  scale: number;
+  scale0: number;
   host: Host;
   mu: number;
 }
 
 export const SimulationContext = createContext<Simulation>({
-  scale: 0,
+  scale0: 0,
   host: Host.Mars,
   mu: 0,
 });

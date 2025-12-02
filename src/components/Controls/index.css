@@ -1,26 +1,29 @@
-.speed-control {
+.controls {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
 
-  span {
-    margin-right: 1rem;
-  }
+  .control {
+    display: flex;
 
-  button + span {
-    margin-left: 2rem;
-  }
+    span {
+      margin: auto;
+      margin-right: 1rem;
+    }
 
-  button {
-    font: inherit;
-    border: none;
-    padding: 0.5rem;
-    background-color: var(--mauve-3);
-    color: var(--mauve-11);
+    button {
+      font: inherit;
+      border: none;
+      padding: 0.5rem;
+      background-color: var(--mauve-3);
+      color: var(--mauve-11);
 
-    &[data-selected="true"] {
-      background-color: var(--mauve-6);
-      color: var(--mauve-12);
+      &[data-selected="true"] {
+        background-color: var(--mauve-6);
+        color: var(--mauve-12);
+      }
     }
   }
 }

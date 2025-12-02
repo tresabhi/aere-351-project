@@ -16,36 +16,44 @@ export function Controls() {
   }, [zoom]);
 
   return (
-    <div className="speed-control">
-      <span>SIM SPEED</span>
+    <div className="controls">
+      <div className="control">
+        <span>SIM SPEED</span>
 
-      {Object.values(SimulationSpeed).map((s) =>
-        typeof s === "number" ? (
-          <button
-            key={s}
-            data-selected={s === speed}
-            onClick={() => setSpeed(s)}
-          >
-            {s === SimulationSpeed.Paused ? (
-              "||"
-            ) : (
-              <>
-                x2<sup>{s}</sup>
-              </>
-            )}
-          </button>
-        ) : null
-      )}
+        {Object.values(SimulationSpeed).map((s) =>
+          typeof s === "number" ? (
+            <button
+              key={s}
+              data-selected={s === speed}
+              onClick={() => setSpeed(s)}
+            >
+              {s === SimulationSpeed.Paused ? (
+                "||"
+              ) : (
+                <>
+                  x2<sup>{s}</sup>
+                </>
+              )}
+            </button>
+          ) : null
+        )}
+      </div>
 
-      <span>ZOOM</span>
+      <div className="control">
+        <span>ZOOM</span>
 
-      {Object.values(Zoom).map((z) =>
-        typeof z === "number" ? (
-          <button key={z} data-selected={z === zoom} onClick={() => setZoom(z)}>
-            x{z}
-          </button>
-        ) : null
-      )}
+        {Object.values(Zoom).map((z) =>
+          typeof z === "number" ? (
+            <button
+              key={z}
+              data-selected={z === zoom}
+              onClick={() => setZoom(z)}
+            >
+              x{z}
+            </button>
+          ) : null
+        )}
+      </div>
     </div>
   );
 }

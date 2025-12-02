@@ -4,12 +4,12 @@ import { mineSats, MineSatState } from "../../stores/mineSats";
 import { Satellite } from "../Satellite";
 import "./index.css";
 
-function Representation() {
-  return <div className="mine-sat" />;
-}
-
 interface MineSatProps {
   index: number;
+}
+
+function Representation({ index }: MineSatProps) {
+  return <div className="mine-sat" />;
 }
 
 export function MineSat({ index }: MineSatProps) {
@@ -66,7 +66,7 @@ export function MineSat({ index }: MineSatProps) {
 
   return (
     <Satellite t0={t0} a={a} e={e} omega={omega}>
-      <Representation />
+      <Representation index={index} />
     </Satellite>
   );
 }

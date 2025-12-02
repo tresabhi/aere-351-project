@@ -20,7 +20,13 @@ export function Controls() {
             data-selected={s === speed}
             onClick={() => setSpeed(s)}
           >
-            x2<sup>{s}</sup>
+            {s === SimulationSpeed.Paused ? (
+              "||"
+            ) : (
+              <>
+                x2<sup>{s}</sup>
+              </>
+            )}
           </button>
         ) : null
       )}

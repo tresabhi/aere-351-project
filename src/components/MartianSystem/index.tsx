@@ -13,7 +13,7 @@ export function MartianSystem() {
     <SimulationContext
       value={{ scale: 5 * r_harbor, mu: mu_mars, host: Host.Mars }}
     >
-      <div className="martian-system root-panel">
+      <div className="system">
         <Label>MARTIAN SYSTEM</Label>
 
         <Orbit r={r_harbor} />

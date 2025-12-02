@@ -3,24 +3,36 @@
   width: 100vw;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
   padding: 0.5rem;
   box-sizing: border-box;
-
-  /* width: 1920px;
-  height: 1080px; */
+  align-items: center;
+  overflow: hidden;
 }
 
-.app-vertical {
+.systems {
   display: flex;
-  flex-direction: column;
   gap: 0.5rem;
   flex: 1;
-  justify-content: space-between;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
 }
 
-.root-panel {
+.system {
   background-color: var(--mauve-1);
   position: relative;
   overflow: hidden;
+  max-height: 100%;
+  aspect-ratio: 1 / 1;
+  height: 100%;
+}
+
+@media (max-aspect-ratio: 1 / 1) {
+  .systems {
+    flex-direction: column;
+    width: 100%;
+  }
 }

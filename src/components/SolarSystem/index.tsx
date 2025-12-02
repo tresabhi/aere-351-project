@@ -15,7 +15,7 @@ export function SolarSystem() {
     <SimulationContext
       value={{ scale: 2.5 * r_jupiter, mu: mu_sun, host: Host.Sun }}
     >
-      <div className="solar-system root-panel">
+      <div className="system">
         <Orbit r={r_mars} />
         <Orbit r={r_jupiter} />
 

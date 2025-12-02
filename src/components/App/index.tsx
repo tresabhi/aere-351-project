@@ -6,12 +6,12 @@ import "./index.css";
 export function App() {
   return (
     <div className="app">
-      <SolarSystem />
-
-      <div className="app-vertical">
+      <div className="systems">
+        <SolarSystem />
         <MartianSystem />
-        <Controls />
       </div>
+
+      <Controls />
     </div>
   );
 }

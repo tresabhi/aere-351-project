@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: ${{ github.ref == 'refs/heads/main' }}
 
 permissions:
-  contents: write
+  pages: write
 
 jobs:
   build:

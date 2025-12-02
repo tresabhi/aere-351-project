@@ -7,6 +7,10 @@
     margin-right: 1rem;
   }
 
+  button + span {
+    margin-left: 2rem;
+  }
+
   button {
     font: inherit;
     border: none;

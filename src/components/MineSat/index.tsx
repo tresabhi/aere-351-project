@@ -8,7 +8,7 @@ interface MineSatProps {
   index: number;
 }
 
-function Representation({ index }: MineSatProps) {
+function Representation() {
   return <div className="mine-sat" />;
 }
 
@@ -66,7 +66,7 @@ export function MineSat({ index }: MineSatProps) {
 
   return (
     <Satellite t0={t0} a={a} e={e} omega={omega}>
-      <Representation index={index} />
+      <Representation />
     </Satellite>
   );
 }

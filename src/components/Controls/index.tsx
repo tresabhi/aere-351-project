@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { SIMULATION_SPEED } from "../../util/timer";
-import { Zoom, zoomEvent } from "../../util/zoom";
+import { zoomEvent } from "../../util/zoom";
 import "./index.css";
 
 export function Controls() {
@@ -25,6 +25,7 @@ export function Controls() {
         </label>
         <input
           type="range"
+          step="any"
           min={8}
           max={32}
           value={speed}
@@ -40,17 +41,18 @@ export function Controls() {
       <div className="control">
         <span>ZOOM</span>
 
-        {Object.values(Zoom).map((z) =>
-          typeof z === "number" ? (
-            <button
-              key={z}
-              data-selected={z === zoom}
-              onClick={() => setZoom(z)}
-            >
-              x{z}
-            </button>
-          ) : null
-        )}
+        <label>x1</label>
+        <input
+          type="range"
+          step="any"
+          min={1}
+          max={64}
+          value={zoom}
+          onChange={(event) => {
+            setZoom(event.target.valueAsNumber);
+          }}
+        />
+        <label>x64</label>
       </div>
     </div>
   );

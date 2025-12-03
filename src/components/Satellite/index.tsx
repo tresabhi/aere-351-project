@@ -4,7 +4,7 @@ import { SimulationContext } from "../../contexts/Simulation";
 import { EFromM } from "../../util/EFromM";
 import { FFromM } from "../../util/FFromM";
 import { timer } from "../../util/timer";
-import { zoomEvent, type Zoom } from "../../util/zoom";
+import { zoomEvent } from "../../util/zoom";
 import "./index.css";
 
 interface SatelliteProps {
@@ -34,7 +34,7 @@ export function Satellite({
   const scale = scale0 * zoom;
 
   useEffect(() => {
-    function handleZoom(event: QuicklimeEvent<Zoom>) {
+    function handleZoom(event: QuicklimeEvent<number>) {
       setZoom(event.data);
     }
 

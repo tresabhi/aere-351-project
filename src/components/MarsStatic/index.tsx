@@ -1,13 +1,13 @@
 import type { QuicklimeEvent } from "quicklime";
 import { useEffect, useState } from "react";
-import { Zoom, zoomEvent } from "../../util/zoom";
+import { zoomEvent } from "../../util/zoom";
 import "./index.css";
 
 export function MarsStatic() {
   const [zoom, setZoom] = useState(zoomEvent.last!);
 
   useEffect(() => {
-    function handleZoom(event: QuicklimeEvent<Zoom>) {
+    function handleZoom(event: QuicklimeEvent<number>) {
       setZoom(event.data);
     }
 

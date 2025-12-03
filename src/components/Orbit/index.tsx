@@ -1,7 +1,7 @@
 import type { QuicklimeEvent } from "quicklime";
 import { useContext, useEffect, useState } from "react";
 import { SimulationContext } from "../../contexts/Simulation";
-import { Zoom, zoomEvent } from "../../util/zoom";
+import { zoomEvent } from "../../util/zoom";
 import "./index.css";
 
 interface Props {
@@ -15,7 +15,7 @@ export function Orbit({ r }: Props) {
   const size = (2 * r * 100) / scale;
 
   useEffect(() => {
-    function handleZoom(event: QuicklimeEvent<Zoom>) {
+    function handleZoom(event: QuicklimeEvent<number>) {
       setZoom(event.data);
     }
 

@@ -1,7 +1,7 @@
 import type { QuicklimeEvent } from "quicklime";
 import { useEffect, useState } from "react";
 import { r_harbor } from "../../util/constants";
-import { zoomEvent, type Zoom } from "../../util/zoom";
+import { zoomEvent } from "../../util/zoom";
 import { Satellite } from "../Satellite";
 import "./index.css";
 
@@ -9,7 +9,7 @@ export function Harbor() {
   const [zoom, setZoom] = useState(zoomEvent.last!);
 
   useEffect(() => {
-    function handleZoom(event: QuicklimeEvent<Zoom>) {
+    function handleZoom(event: QuicklimeEvent<number>) {
       setZoom(event.data);
     }
 

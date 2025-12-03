@@ -183,9 +183,8 @@ timer.on((event) => {
         const M = e * Math.sinh(F) - F;
         const T = Math.sqrt(-(a ** 3) / mu_mars) * M;
 
-        const beta = Math.acos(1 / e);
         const mars_theta = n_mars * t;
-        const omega = beta + mars_theta;
+        const omega = mars_theta;
 
         mineSat.a = a;
         mineSat.e = e;

@@ -4,9 +4,14 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: 0.5rem 2rem;
+  width: 100%;
+  padding: 1rem 0;
 
   .control {
     display: flex;
+    flex: 1;
+    width: 100%;
+    max-width: 32rem;
 
     span {
       margin: auto;
@@ -20,7 +25,8 @@
 
     input {
       margin: 0 0.5rem;
-      width: min(20vw, 16rem);
+      flex: 1;
+      min-width: 0;
     }
 
     button {

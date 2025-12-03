@@ -80,161 +80,163 @@ const cache: MineSatCache[] = times(N, () => ({
 timer.on((event) => {
   for (let i = 0; i < N; i++) {
     const mineSat = mineSats[i];
-    const t = mineSat.expiry;
 
-    if (t > event.data) continue;
+    while (event.data >= mineSat.expiry) {
+      const t = mineSat.expiry;
 
-    switch (mineSat.state) {
-      case MineSatState.Depositing: {
-        const trojan = Math.random() > 0.5 ? TrojanKind.Blue : TrojanKind.Red;
+      switch (mineSat.state) {
+        case MineSatState.Depositing: {
+          const trojan = Math.random() > 0.5 ? TrojanKind.Blue : TrojanKind.Red;
 
-        const u1 = Math.random();
-        const u2 = Math.random();
-        const z0 =
-          Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+          const u1 = Math.random();
+          const u2 = Math.random();
+          const z0 =
+            Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
 
-        const omega = z0 * TROJAN_STANDARD_DEVIATION + TROJAN_OMEGAS[trojan];
+          const omega = z0 * TROJAN_STANDARD_DEVIATION + TROJAN_OMEGAS[trojan];
 
-        const t_0 =
-          ((1 / 2) * n_jupiter * T_transfer + omega - Math.PI) /
-          (n_mars - n_jupiter);
-        const t_next = T_synodic * Math.ceil((t - t_0) / T_synodic) + t_0;
+          const t_0 =
+            ((1 / 2) * n_jupiter * T_transfer + omega - Math.PI) /
+            (n_mars - n_jupiter);
+          const t_next = T_synodic * Math.ceil((t - t_0) / T_synodic) + t_0;
 
-        mineSat.omega = 0;
+          mineSat.omega = 0;
 
-        mineSat.state = MineSatState.AwaitingTrojan;
-        mineSat.expiry = t_next;
+          mineSat.state = MineSatState.AwaitingTrojan;
+          mineSat.expiry = t_next;
 
-        cache[i].omega_trojan = omega;
+          cache[i].omega_trojan = omega;
 
-        break;
-      }
-
-      case MineSatState.AwaitingTrojan: {
-        const a = (r_jupiter + r_mars) / 2;
-        const e = (r_jupiter - r_mars) / (r_jupiter + r_mars);
-
-        const theta_mars = n_mars * t;
-
-        mineSat.a = a;
-        mineSat.e = e;
-        mineSat.omega = theta_mars;
-
-        mineSat.t0 = t;
-
-        mineSat.state = MineSatState.EllipticalEscape;
-        mineSat.expiry += T_transfer / 2;
-
-        break;
-      }
-
-      case MineSatState.EllipticalEscape: {
-        mineSat.a = r_jupiter;
-        mineSat.e = 0;
-        mineSat.omega = cache[i].omega_trojan;
-
-        mineSat.t0 = 0;
-        mineSat.state = MineSatState.MiningTrojan;
-        mineSat.expiry +=
-          MINING_TIME_AVERAGE + (2 * Math.random() - 1) * MINING_TIME_VARIANCE;
-
-        break;
-      }
-
-      case MineSatState.MiningTrojan: {
-        const omega = cache[i].omega_trojan;
-
-        const t_0 =
-          (omega - (1 / 2) * n_mars * T_transfer - Math.PI) /
-          (n_mars - n_jupiter);
-        const t_next = T_synodic * Math.ceil((t - t_0) / T_synodic) + t_0;
-
-        mineSat.state = MineSatState.AwaitingMars;
-        mineSat.expiry = t_next;
-
-        break;
-      }
-
-      case MineSatState.AwaitingMars: {
-        const a = (r_jupiter + r_mars) / 2;
-        const e = (r_jupiter - r_mars) / (r_jupiter + r_mars);
-
-        const theta_juipiter = n_jupiter * t;
-
-        mineSat.a = a;
-        mineSat.e = e;
-        mineSat.omega = theta_juipiter + cache[i].omega_trojan + Math.PI;
-
-        mineSat.t0 = t - T_transfer / 2;
-
-        mineSat.state = MineSatState.EllipticalReturn;
-        mineSat.expiry += T_transfer / 2;
-
-        break;
-      }
-
-      case MineSatState.EllipticalReturn: {
-        const a = -mu_mars / v_infinity ** 2;
-        const e = 1 - r_harbor / a;
-        const p = a * (1 - e ** 2);
-
-        const theta = Math.acos((p / r_mars_soi - 1) / e);
-        const F =
-          2 * Math.atanh(Math.sqrt((e - 1) / (e + 1)) * Math.tan(theta / 2));
-        const M = e * Math.sinh(F) - F;
-        const T = Math.sqrt(-(a ** 3) / mu_mars) * M;
-
-        const mars_theta = n_mars * t;
-        const omega = mars_theta;
-
-        mineSat.a = a;
-        mineSat.e = e;
-        mineSat.omega = omega;
-
-        mineSat.state = MineSatState.HyperbolicReturn;
-        mineSat.expiry += T;
-        mineSat.t0 = t + T;
-
-        if (pauseNextReEntryEvent.last) {
-          SIMULATION_SPEED.value = 0;
-          pauseNextReEntryEvent.dispatch(false);
+          break;
         }
 
-        break;
-      }
+        case MineSatState.AwaitingTrojan: {
+          const a = (r_jupiter + r_mars) / 2;
+          const e = (r_jupiter - r_mars) / (r_jupiter + r_mars);
 
-      case MineSatState.HyperbolicReturn: {
-        const theta_harbor = n_harbor * t;
-        const delta_theta = normalizeAngle(mineSat.omega - theta_harbor);
-        const delta_t = delta_theta / n_harbor;
-        const T_phase = T_harbor + delta_t;
+          const theta_mars = n_mars * t;
 
-        const a = (mu_mars * (T_phase / (2 * Math.PI)) ** 2) ** (1 / 3);
-        const r_p = r_harbor;
-        const r_a = 2 * a - r_p;
-        const e = (r_a - r_p) / (r_a + r_p);
+          mineSat.a = a;
+          mineSat.e = e;
+          mineSat.omega = theta_mars;
 
-        mineSat.e = e;
-        mineSat.a = a;
+          mineSat.t0 = t;
 
-        mineSat.expiry += T_phase;
-        mineSat.state = MineSatState.Phasing;
+          mineSat.state = MineSatState.EllipticalEscape;
+          mineSat.expiry += T_transfer / 2;
 
-        break;
-      }
+          break;
+        }
 
-      case MineSatState.Phasing: {
-        mineSat.a = r_harbor;
-        mineSat.e = 0;
-        mineSat.omega = 0;
-        mineSat.t0 = 0;
+        case MineSatState.EllipticalEscape: {
+          mineSat.a = r_jupiter;
+          mineSat.e = 0;
+          mineSat.omega = cache[i].omega_trojan;
 
-        mineSat.state = MineSatState.Depositing;
-        mineSat.expiry +=
-          DEPOSITING_TIME_AVERAGE +
-          (2 * Math.random() - 1) * DEPOSITING_TIME_VARIANCE;
+          mineSat.t0 = 0;
+          mineSat.state = MineSatState.MiningTrojan;
+          mineSat.expiry +=
+            MINING_TIME_AVERAGE +
+            (2 * Math.random() - 1) * MINING_TIME_VARIANCE;
 
-        break;
+          break;
+        }
+
+        case MineSatState.MiningTrojan: {
+          const omega = cache[i].omega_trojan;
+
+          const t_0 =
+            (omega - (1 / 2) * n_mars * T_transfer - Math.PI) /
+            (n_mars - n_jupiter);
+          const t_next = T_synodic * Math.ceil((t - t_0) / T_synodic) + t_0;
+
+          mineSat.state = MineSatState.AwaitingMars;
+          mineSat.expiry = t_next;
+
+          break;
+        }
+
+        case MineSatState.AwaitingMars: {
+          const a = (r_jupiter + r_mars) / 2;
+          const e = (r_jupiter - r_mars) / (r_jupiter + r_mars);
+
+          const theta_juipiter = n_jupiter * t;
+
+          mineSat.a = a;
+          mineSat.e = e;
+          mineSat.omega = theta_juipiter + cache[i].omega_trojan + Math.PI;
+
+          mineSat.t0 = t - T_transfer / 2;
+
+          mineSat.state = MineSatState.EllipticalReturn;
+          mineSat.expiry += T_transfer / 2;
+
+          break;
+        }
+
+        case MineSatState.EllipticalReturn: {
+          const a = -mu_mars / v_infinity ** 2;
+          const e = 1 - r_harbor / a;
+          const p = a * (1 - e ** 2);
+
+          const theta = Math.acos((p / r_mars_soi - 1) / e);
+          const F =
+            2 * Math.atanh(Math.sqrt((e - 1) / (e + 1)) * Math.tan(theta / 2));
+          const M = e * Math.sinh(F) - F;
+          const T = Math.sqrt(-(a ** 3) / mu_mars) * M;
+
+          const mars_theta = n_mars * t;
+          const omega = mars_theta;
+
+          mineSat.a = a;
+          mineSat.e = e;
+          mineSat.omega = omega;
+
+          mineSat.state = MineSatState.HyperbolicReturn;
+          mineSat.expiry += T;
+          mineSat.t0 = t + T;
+
+          if (pauseNextReEntryEvent.last) {
+            SIMULATION_SPEED.value = 0;
+            pauseNextReEntryEvent.dispatch(false);
+          }
+
+          break;
+        }
+
+        case MineSatState.HyperbolicReturn: {
+          const theta_harbor = n_harbor * t;
+          const delta_theta = normalizeAngle(mineSat.omega - theta_harbor);
+          const delta_t = delta_theta / n_harbor;
+          const T_phase = T_harbor + delta_t;
+
+          const a = (mu_mars * (T_phase / (2 * Math.PI)) ** 2) ** (1 / 3);
+          const r_p = r_harbor;
+          const r_a = 2 * a - r_p;
+          const e = (r_a - r_p) / (r_a + r_p);
+
+          mineSat.e = e;
+          mineSat.a = a;
+
+          mineSat.expiry += T_phase;
+          mineSat.state = MineSatState.Phasing;
+
+          break;
+        }
+
+        case MineSatState.Phasing: {
+          mineSat.a = r_harbor;
+          mineSat.e = 0;
+          mineSat.omega = 0;
+          mineSat.t0 = 0;
+
+          mineSat.state = MineSatState.Depositing;
+          mineSat.expiry +=
+            DEPOSITING_TIME_AVERAGE +
+            (2 * Math.random() - 1) * DEPOSITING_TIME_VARIANCE;
+
+          break;
+        }
       }
     }
 

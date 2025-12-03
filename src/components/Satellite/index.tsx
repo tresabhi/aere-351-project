@@ -25,7 +25,6 @@ export function Satellite({
   a,
   omega = 0,
   rotate = false,
-  debug = false,
   t0 = 0,
 }: SatelliteProps) {
   const satellite = useRef<HTMLDivElement>(null);

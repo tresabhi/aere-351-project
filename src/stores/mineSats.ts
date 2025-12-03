@@ -11,8 +11,9 @@ import {
   r_mars_soi,
   T_synodic,
   T_transfer,
+  v_infinity,
 } from "../util/constants";
-import { SIMULATION_SPEED, SimulationSpeed, timer } from "../util/timer";
+import { timer } from "../util/timer";
 
 // const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -5;
 const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -10;
@@ -169,7 +170,6 @@ timer.on((event) => {
       }
 
       case MineSatState.EllipticalReturn: {
-        let v_infinity = 3;
         const a = -mu_mars / v_infinity ** 2;
         const e = 1 - r_harbor / a;
         const p = a * (1 - e ** 2);
@@ -184,11 +184,8 @@ timer.on((event) => {
         mineSat.e = e;
         mineSat.omega = 0;
 
-        setTimeout(() => timer.dispatch(t));
-        SIMULATION_SPEED.value = SimulationSpeed.Paused;
-
         mineSat.state = MineSatState.HyperbolicReturn;
-        mineSat.expiry += Infinity;
+        mineSat.expiry += T;
         mineSat.t0 = t + T;
 
         break;

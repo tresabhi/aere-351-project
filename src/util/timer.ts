@@ -5,7 +5,7 @@ export enum SimulationSpeed {
   Power8 = 8,
   Power11 = 11,
   Power13 = 13,
-  Power17 = 17,
+  Power18 = 18,
   Power24 = 24,
   Power26 = 27,
 }
@@ -29,4 +29,4 @@ timer.on(() => {
     timer.dispatch(t);
   });
 });
-timer.dispatch(0);
+timer.dispatch(timer.last!);

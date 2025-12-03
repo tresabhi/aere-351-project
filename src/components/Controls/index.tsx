@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { SIMULATION_SPEED, SimulationSpeed } from "../../util/timer";
+import { SIMULATION_SPEED } from "../../util/timer";
 import { Zoom, zoomEvent } from "../../util/zoom";
 import "./index.css";
 
@@ -20,23 +20,21 @@ export function Controls() {
       <div className="control">
         <span>SIM SPEED</span>
 
-        {Object.values(SimulationSpeed).map((s) =>
-          typeof s === "number" ? (
-            <button
-              key={s}
-              data-selected={s === speed}
-              onClick={() => setSpeed(s)}
-            >
-              {s === SimulationSpeed.Paused ? (
-                "||"
-              ) : (
-                <>
-                  x2<sup>{s}</sup>
-                </>
-              )}
-            </button>
-          ) : null
-        )}
+        <label>
+          x2<sup>8</sup>
+        </label>
+        <input
+          type="range"
+          min={8}
+          max={32}
+          value={speed}
+          onChange={(event) => {
+            setSpeed(event.target.valueAsNumber);
+          }}
+        />
+        <label>
+          x2<sup>32</sup>
+        </label>
       </div>
 
       <div className="control">

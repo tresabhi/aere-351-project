@@ -18,8 +18,8 @@ import {
 import { normalizeAngle } from "../util/normalizeAngle";
 import { timer } from "../util/timer";
 
-// const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -5;
-const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -10;
+const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -5;
+// const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -10;
 
 const MINING_TIME_AVERAGE = 48 * 30 * 24 * 60 * 60;
 const MINING_TIME_VARIANCE = 32 * 30 * 24 * 60 * 60;
@@ -58,12 +58,12 @@ type MineSat = {
 
 export const mineSats: MineSat[] = times(N, () => ({
   state: MineSatState.HyperbolicReturn,
-  expiry: 0,
+  expiry: timer.last!,
 
-  t0: 0,
+  t0: timer.last!,
   a: r_harbor,
   e: 0,
-  omega: Math.PI / 3,
+  omega: Math.random() * 2 * Math.PI,
 
   callbacks: [],
 }));
@@ -199,7 +199,8 @@ timer.on((event) => {
       }
 
       case MineSatState.HyperbolicReturn: {
-        const delta_theta = normalizeAngle(mineSat.omega);
+        const theta_harbor = n_harbor * t;
+        const delta_theta = normalizeAngle(mineSat.omega - theta_harbor);
         const delta_t = delta_theta / n_harbor;
         const T_phase = T_harbor + delta_t;
 
@@ -207,8 +208,6 @@ timer.on((event) => {
         const r_p = r_harbor;
         const r_a = 2 * a - r_p;
         const e = (r_a - r_p) / (r_a + r_p);
-
-        console.log(delta_t);
 
         mineSat.e = e;
         mineSat.a = a;

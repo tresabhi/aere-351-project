@@ -15,11 +15,13 @@ export const mu_mars = 4.2828e4;
 export const mu_jupiter = 1.2669e8;
 export const mu_sun = 1.3271244e11;
 
+export const T_harbor = 2 * Math.PI * Math.sqrt(r_harbor ** 3 / mu_mars);
 export const T_mars = 2 * Math.PI * Math.sqrt(a_mars ** 3 / mu_sun);
 export const T_jupiter = 2 * Math.PI * Math.sqrt(a_jupiter ** 3 / mu_sun);
 export const T_synodic = 1 / (1 / T_mars - 1 / T_jupiter);
 export const T_transfer = 2 * Math.PI * Math.sqrt(a_transfer ** 3 / mu_sun);
 
+export const n_harbor = Math.sqrt(mu_mars / r_harbor ** 3);
 export const n_mars = Math.sqrt(mu_sun / a_mars ** 3);
 export const n_jupiter = Math.sqrt(mu_sun / a_jupiter ** 3);
 
@@ -28,5 +30,3 @@ export const r_mars_soi = (mu_mars / mu_sun) ** (2 / 5) * r_mars;
 export const v_infinity =
   Math.sqrt(mu_sun * (2 / r_mars - 1 / a_transfer)) -
   Math.sqrt(mu_sun / r_mars);
-
-console.log(v_infinity);

@@ -3,16 +3,19 @@ import { TROJAN_OMEGAS, TrojanKind } from "../components/Trojan";
 import {
   mu_mars,
   N,
+  n_harbor,
   n_jupiter,
   n_mars,
   r_harbor,
   r_jupiter,
   r_mars,
   r_mars_soi,
+  T_harbor,
   T_synodic,
   T_transfer,
   v_infinity,
 } from "../util/constants";
+import { normalizeAngle } from "../util/normalizeAngle";
 import { timer } from "../util/timer";
 
 // const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -5;
@@ -54,13 +57,13 @@ type MineSat = {
 };
 
 export const mineSats: MineSat[] = times(N, () => ({
-  state: MineSatState.Depositing,
+  state: MineSatState.HyperbolicReturn,
   expiry: 0,
 
   t0: 0,
   a: r_harbor,
   e: 0,
-  omega: 0,
+  omega: Math.PI / 3,
 
   callbacks: [],
 }));
@@ -180,9 +183,13 @@ timer.on((event) => {
         const M = e * Math.sinh(F) - F;
         const T = Math.sqrt(-(a ** 3) / mu_mars) * M;
 
+        const beta = Math.acos(1 / e);
+        const mars_theta = n_mars * t;
+        const omega = beta + mars_theta;
+
         mineSat.a = a;
         mineSat.e = e;
-        mineSat.omega = 0;
+        mineSat.omega = omega;
 
         mineSat.state = MineSatState.HyperbolicReturn;
         mineSat.expiry += T;
@@ -192,9 +199,33 @@ timer.on((event) => {
       }
 
       case MineSatState.HyperbolicReturn: {
+        const delta_theta = normalizeAngle(mineSat.omega);
+        const delta_t = delta_theta / n_harbor;
+        const T_phase = T_harbor + delta_t;
+
+        const a = (mu_mars * (T_phase / (2 * Math.PI)) ** 2) ** (1 / 3);
+        const r_p = r_harbor;
+        const r_a = 2 * a - r_p;
+        const e = (r_a - r_p) / (r_a + r_p);
+
+        console.log(delta_t);
+
+        mineSat.e = e;
+        mineSat.a = a;
+
+        mineSat.expiry += T_phase;
+        mineSat.state = MineSatState.Phasing;
+
+        break;
+      }
+
+      case MineSatState.Phasing: {
         mineSat.a = r_harbor;
         mineSat.e = 0;
+        mineSat.omega = 0;
+        mineSat.t0 = 0;
 
+        mineSat.state = MineSatState.Depositing;
         mineSat.expiry +=
           DEPOSITING_TIME_AVERAGE +
           (2 * Math.random() - 1) * DEPOSITING_TIME_VARIANCE;

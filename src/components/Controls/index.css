@@ -12,10 +12,12 @@
     flex: 1;
     width: 100%;
     max-width: 32rem;
+    justify-content: center;
 
     span {
-      margin: auto;
+      margin: auto 0;
       margin-right: 1rem;
+      white-space: nowrap;
     }
 
     label {
@@ -23,7 +25,7 @@
       font-size: 0.75em;
     }
 
-    input {
+    input[type="range"] {
       margin: 0 0.5rem;
       flex: 1;
       min-width: 0;

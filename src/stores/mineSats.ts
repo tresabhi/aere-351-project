@@ -16,7 +16,8 @@ import {
   v_infinity,
 } from "../util/constants";
 import { normalizeAngle } from "../util/normalizeAngle";
-import { timer } from "../util/timer";
+import { pauseNextReEntryEvent } from "../util/pauseNextReEntry";
+import { SIMULATION_SPEED, timer } from "../util/timer";
 
 const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -5;
 // const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -10;
@@ -193,6 +194,11 @@ timer.on((event) => {
         mineSat.state = MineSatState.HyperbolicReturn;
         mineSat.expiry += T;
         mineSat.t0 = t + T;
+
+        if (pauseNextReEntryEvent.last) {
+          SIMULATION_SPEED.value = 0;
+          pauseNextReEntryEvent.dispatch(false);
+        }
 
         break;
       }

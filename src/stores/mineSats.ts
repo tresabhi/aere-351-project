@@ -1,19 +1,21 @@
 import { times } from "lodash-es";
 import { TROJAN_OMEGAS, TrojanKind } from "../components/Trojan";
 import {
+  mu_mars,
   N,
   n_jupiter,
   n_mars,
   r_harbor,
   r_jupiter,
   r_mars,
+  r_mars_soi,
   T_synodic,
   T_transfer,
 } from "../util/constants";
-import { timer } from "../util/timer";
+import { SIMULATION_SPEED, SimulationSpeed, timer } from "../util/timer";
 
-const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -5;
-// const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -10;
+// const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -5;
+const TROJAN_STANDARD_DEVIATION = Math.PI * 2 ** -10;
 
 const MINING_TIME_AVERAGE = 48 * 30 * 24 * 60 * 60;
 const MINING_TIME_VARIANCE = 32 * 30 * 24 * 60 * 60;
@@ -167,10 +169,35 @@ timer.on((event) => {
       }
 
       case MineSatState.EllipticalReturn: {
+        let v_infinity = 3;
+        const a = -mu_mars / v_infinity ** 2;
+        const e = 1 - r_harbor / a;
+        const p = a * (1 - e ** 2);
+
+        const theta = Math.acos((p / r_mars_soi - 1) / e);
+        const F =
+          2 * Math.atanh(Math.sqrt((e - 1) / (e + 1)) * Math.tan(theta / 2));
+        const M = e * Math.sinh(F) - F;
+        const T = Math.sqrt(-(a ** 3) / mu_mars) * M;
+
+        mineSat.a = a;
+        mineSat.e = e;
+        mineSat.omega = 0;
+
+        setTimeout(() => timer.dispatch(t));
+        SIMULATION_SPEED.value = SimulationSpeed.Paused;
+
+        mineSat.state = MineSatState.HyperbolicReturn;
+        mineSat.expiry += Infinity;
+        mineSat.t0 = t + T;
+
+        break;
+      }
+
+      case MineSatState.HyperbolicReturn: {
         mineSat.a = r_harbor;
         mineSat.e = 0;
 
-        mineSat.state = MineSatState.Depositing;
         mineSat.expiry +=
           DEPOSITING_TIME_AVERAGE +
           (2 * Math.random() - 1) * DEPOSITING_TIME_VARIANCE;

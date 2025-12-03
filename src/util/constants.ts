@@ -1,5 +1,5 @@
-export const N = 200;
-// export const N = 1;
+// export const N = 500;
+export const N = 1;
 
 export const R_mars = 3389.5;
 
@@ -23,4 +23,10 @@ export const T_transfer = 2 * Math.PI * Math.sqrt(a_transfer ** 3 / mu_sun);
 export const n_mars = Math.sqrt(mu_sun / a_mars ** 3);
 export const n_jupiter = Math.sqrt(mu_sun / a_jupiter ** 3);
 
-export const r_mars_soi = (mu_mars / mu_jupiter) ** (2 / 5) * r_mars;
+export const r_mars_soi = (mu_mars / mu_sun) ** (2 / 5) * r_mars;
+
+export const v_infinity =
+  Math.sqrt(mu_sun * (2 / r_mars - 1 / a_transfer)) -
+  Math.sqrt(mu_sun / r_mars);
+
+console.log(v_infinity);

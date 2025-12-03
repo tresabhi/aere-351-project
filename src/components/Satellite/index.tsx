@@ -15,6 +15,8 @@ interface SatelliteProps {
   omega?: number;
   e: number;
   a: number;
+
+  debug?: boolean;
 }
 
 export function Satellite({
@@ -23,6 +25,7 @@ export function Satellite({
   a,
   omega = 0,
   rotate = false,
+  debug = false,
   t0 = 0,
 }: SatelliteProps) {
   const satellite = useRef<HTMLDivElement>(null);
@@ -46,7 +49,7 @@ export function Satellite({
     function update(event: QuicklimeEvent<number>) {
       if (!satellite.current) return;
 
-      let t = event.data - t0;
+      const t = event.data - t0;
 
       let x0: number;
       let y0: number;
@@ -69,6 +72,9 @@ export function Satellite({
         x0 = a * (Math.cosh(F) - e);
         y0 = a * Math.sqrt(e ** 2 - 1) * Math.sinh(-F);
       }
+
+      // console.clear();
+      // console.log(x0 / scale, y0 / scale);
 
       const c = Math.cos(omega);
       const s = Math.sin(omega);

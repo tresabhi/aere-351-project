@@ -65,7 +65,7 @@ export function MineSat({ index }: MineSatProps) {
   if (!visible) return null;
 
   return (
-    <Satellite t0={t0} a={a} e={e} omega={omega}>
+    <Satellite debug t0={t0} a={a} e={e} omega={omega}>
       <Representation />
     </Satellite>
   );

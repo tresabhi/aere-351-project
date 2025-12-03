@@ -4,6 +4,7 @@ export enum SimulationSpeed {
   Paused = 0,
   Power8 = 8,
   Power11 = 11,
+  Power13 = 13,
   Power24 = 24,
   Power26 = 27,
 }
